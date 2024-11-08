@@ -1,17 +1,23 @@
 <?php
 $lang = [
-  'Said Lagauit' => 'Said Lagauit',
+  'Deltech' => 'Deltech',
   'Ltr' => 'Ltr',
   'En' => 'en',
   'Bootstrap' => 'bootstrap.min.css',
   'English' => 'English',
-  'Arabic' => 'Arabic',
-  'Shop' => 'Shop',
+  'Filipino' => 'Filipino',
+  'Products' => 'Products',
   'FAQ' => 'FAQ',
   'Tracking' => 'Tracking',
   'Contact Us' => 'Contact Us',
+  'Login' => 'Login',
   'Search' => 'Search',
-  'Said Lagauit Store' => 'Said Lagauit Store',
+  'Deltech Parking Systems and Solution, Inc.' => 'Deltech Parking Systems and Solution, Inc.',
   'Last Products' => 'Last Products',
-  '' => ''
+  '' => '',
+  'Services' => 'Services',
+  'About Us' => 'About Us',
+  'About Us' => 'About Us',
+  'Contact Us' => 'Contact Us',
+  
 ];

@@ -1,5 +1,28 @@
 body {
   font-size: 1.3rem;
+  body {
+    background-image: linear-gradient(to bottom, #2980b9, #5791bc, #7ba2bf, #9cb3c3, #bdc3c7);
+    /* Full-screen cover */
+    height: 100vh; 
+    margin: 0;
+    display: flex; /* Center cards */
+    justify-content: center; /* Align items horizontally */
+    align-items: center; /* Align items vertically */
+}
+
+/* Optional: Add a subtle noise effect for more depth */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('path/to/noise.png'); /* Replace with your noise texture */
+    opacity: 0.05; /* Adjust opacity to suit */
+    pointer-events: none; /* Allow clicks through the noise */
+}
+
 }
 
 a {
@@ -23,6 +46,55 @@ h2.card-title {
   font-size: 1.2rem;
 }
 
+
+/* Glassmorphism Card Style */
+.card {
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Optional: Styling for text inside the card */
+.card h2, .card p {
+  margin: 0; /* Remove default margin */
+}
+
+/* Card link styles */
+.card a {
+  color: #007bff; /* Link color */
+  text-decoration: none; /* Remove underline */
+}
+
+.card a:hover {
+  text-decoration: none; /* Underline on hover */
+}
+
+.container {
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Optional: Styling for text inside the card */
+.container h2, .container p {
+  margin: 0; /* Remove default margin */
+}
+
+/* Card link styles */
+.container a {
+  color: #007bff; /* Link color */
+  text-decoration: none; /* Remove underline */
+}
+
+.container a:hover {
+  text-decoration: none; /* Underline on hover */
+}
 
 /* `sm` applies to x-small devices (portrait phones, less than 576px) */
 
@@ -56,4 +128,37 @@ h2.card-title {
 /* `xxl` applies to x-large devices (large desktops, less than 1400px) */
 
 @media (max-width: 1399.98px) {
+}
+
+
+.deltech-home {
+  position: fixed;
+  bottom: 20px; 
+  right: 20px; 
+  opacity: 0; /* Initially hidden */
+  background-color: white; 
+  color: #007bff; 
+  border-radius: 50%; 
+  padding: 10px; 
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); 
+  z-index: 1000; 
+  transition: opacity 0.3s; 
+  pointer-events: none; /* Prevent interaction when not visible */
+}
+
+.deltech-home.visible {
+  opacity: 1; /* Make visible */
+  pointer-events: auto; /* Allow interaction */
+}
+
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.9); /* Optional: add a background for better visibility */
+  padding: 10px 20px; /* Adjust padding as needed */
+  text-align: center; /* Center the footer text */
+  z-index: 1; /* Set a lower z-index to place it behind other elements */
 }

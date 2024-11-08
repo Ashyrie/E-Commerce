@@ -27,7 +27,7 @@ if ($selectedLanguage === 'ar') {
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?php getTitle(); ?></title>
-  <meta name="description" content="Discover a wide range of high-quality digital products at the Said Lagauit Online Store. Shop for software, applications, games, and more. Enjoy great deals, fast delivery, and exceptional customer service. Start your online shopping experience for digital products today!" />
+  <meta name="description" content="Discover a wide range of high-quality parking products at the Deltech Online Store. Shop for software, applications, games, and more. Enjoy great deals, fast delivery, and exceptional customer service. Start your online shopping experience for parking products today!" />
   <link rel="shortcut icon" href="<?php echo $img ?>favicon_io/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="<?php echo $css; ?><?php echo $lang['Bootstrap']; ?>" />
   <link rel="stylesheet" href="<?php echo $css ?>all.min.css" />

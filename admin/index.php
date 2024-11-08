@@ -1,4 +1,4 @@
-<?php
+<?php 
 session_start();
 $noNavbar = '';
 $pageTitle = 'Login';
@@ -25,7 +25,7 @@ if (isset($_SESSION['username'])) {
         <div class="row">
           <div class="col-md-6 mx-auto">
             <form action="index.php?do=enter-true" method="POST" autocomplete="off">
-              <h1>Login - Said Lagauit | Store</h1>
+              <h1>Login - Deltech | Store</h1>
               <?php
               if (isset($_SESSION['message'])) : ?>
                 <div id="message">
@@ -48,6 +48,8 @@ if (isset($_SESSION['username'])) {
               </div>
               <div class="d-grid gap-2">
                 <button type="submit" class="btn btn-primary" name="enter" disabled>Enter</button>
+                <a href="create-admin.php" class="btn btn-secondary">Create New Admin Account</a>
+                <a href="forgot_pass.php" class="btn btn-link">Forgot password? Click here</a>
               </div>
             </form>
           </div>
@@ -65,12 +67,12 @@ if (isset($_SESSION['username'])) {
       $row = $stmt->fetch();
       $count = $stmt->rowCount();
       if ($count > 0) {
-        $_SESSION['username'] = $username; // Register Session Name
-        $_SESSION['id'] = $row['id']; // Register Session ID
+        $_SESSION['username'] = $username;
+        $_SESSION['id'] = $row['id'];
         if (isset($_POST['rememberMe']) && $_POST['rememberMe'] == 'on') {
           $cookieName = 'login_credentials';
           $cookieValue = $username . '|' . $password;
-          $cookieExpire = time() + (86400 * 30); // 30 days
+          $cookieExpire = time() + (86400 * 30);
           setcookie($cookieName, $cookieValue, $cookieExpire, '/');
         }
         header('location: dashboard.php');
