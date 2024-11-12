@@ -1,5 +1,6 @@
 <?php
 ob_start();
+session_name('admin_session');
 session_start();
 $pageTitle = 'Product';
 include './init.php';

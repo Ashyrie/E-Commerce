@@ -1,4 +1,5 @@
 <?php
+session_name('client_session');
 session_start();
 $pageTitle = 'Reset Password';
 include './init.php';

@@ -1,4 +1,5 @@
 <?php
+session_name('client_session');
 session_start();
 $pageTitle = 'Login';
 include './init.php';

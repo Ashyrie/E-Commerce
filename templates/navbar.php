@@ -1,5 +1,6 @@
 <?php
 if (session_status() == PHP_SESSION_NONE) {
+    session_name('client_session');
     session_start();
 }
 
@@ -72,23 +73,9 @@ $isLoggedIn = isset($_SESSION['customer_id']);
           <ul class="dropdown-menu dropdown-menu-end animate slideIn" aria-labelledby="menuDropdown">
             <li><a class="dropdown-item" href="./faq.php">FAQ</a></li>
             <li><a class="dropdown-item" href="./tracking.php">TRACKING</a></li>
+            <li><a class="dropdown-item" href="./chat_list.php">YOUR INQUIRIES</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li>
-              <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                <input type="hidden" name="language" value="en">
-                <button class="dropdown-item" type="submit">
-                  <span class="fi fi-gb"></span>&nbsp;<?php echo $lang['English'] ?>
-                </button>
-              </form>
-            </li>
-            <li>
-              <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                <input type="hidden" name="language" value="ar">
-                <button class="dropdown-item" type="submit">
-                  <span class="fi fi-ph"></span>&nbsp;<?php echo $lang['Filipino'] ?>
-                </button>
-              </form>
-            </li>
+            
           </ul>
         </li>
       </ul>

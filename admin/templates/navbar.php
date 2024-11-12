@@ -1,6 +1,7 @@
 <?php
 // Start the session if not already started
 if (session_status() == PHP_SESSION_NONE) {
+    session_name('admin_session');
     session_start();
 }
 ?>
@@ -43,6 +44,7 @@ if (session_status() == PHP_SESSION_NONE) {
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="./edit-profile.php">Profile</a></li>
             <li><a class="dropdown-item" href="../">Visit Store</a></li>
+            <li><a class="dropdown-item" href="./admin_chat_list.php">Customer Inquiries</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="./logout.php">Logout</a></li>
           </ul>

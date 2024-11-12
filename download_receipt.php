@@ -1,5 +1,6 @@
 <?php
 ob_start(); // Start output buffering
+session_name('client_session');
 session_start(); // Start the session
 require 'vendor/autoload.php'; // Ensure you load the Composer autoload file
 

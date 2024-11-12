@@ -53,6 +53,17 @@ CREATE TABLE `customers` (
 ALTER TABLE customers ADD note_customer TEXT;
 ALTER TABLE customers ADD COLUMN reset_token VARCHAR(255) NULL;
 
+
+-- eto yung mga bagong fields ai 
+
+ALTER TABLE `customers`
+    ADD COLUMN `company_name` VARCHAR(255) NULL AFTER `name_customer`,
+    ADD COLUMN `company_address` TEXT NULL AFTER `company_name`,
+    ADD COLUMN `job_title` VARCHAR(100) NULL AFTER `company_address`,
+    ADD COLUMN verification_code VARCHAR(6) NULL AFTER password,
+    ADD COLUMN `business_document` VARCHAR(255) NULL AFTER `verification_code`,
+    ADD COLUMN `is_verified` TINYINT(1) DEFAULT 0 NULL AFTER `business_document`;
+
 INSERT INTO `customers` (`name_customer`, `username`, `email_customer`, `phone_customer`, `address`, `password`, `date_at`) VALUES
 ('Juan Dela Cruz', 'juandc', 'juan.delacruz@example.com', '09171234567', '123 Main St', 'password123', '2023-06-20 22:32:10'),
 ('Maria Santos', 'marias', 'maria.santos@example.com', '09281234567', '456 Elm St', 'password456', '2023-06-21 14:03:34'),
@@ -147,4 +158,40 @@ CREATE TABLE `contacts` (
   `created_c` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+CREATE TABLE `messages` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `customer_id` INT,
+    `product_id` INT,
+    `message` TEXT,
+    `timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`customer_id`) REFERENCES `customers`(`id`),
+    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+ALTER TABLE `messages`
+ADD COLUMN sender_type ENUM('customer', 'admin') NOT NULL DEFAULT 'customer';
+
+ALTER TABLE `messages`
+ADD COLUMN `sender_id` INT NOT NULL DEFAULT 0;
+
+ALTER TABLE `messages`
+ADD COLUMN admin_id INT NULL AFTER customer_id;
+---ETONG NASA BABA MGA BAGONG ADD
+
+ALTER TABLE `messages` ADD COLUMN `ticket_id` VARCHAR(20) NOT NULL AFTER `product_id`;
+
+CREATE TABLE `support_tickets` (
+    `ticket_id` VARCHAR(20) PRIMARY KEY, -- Unique ticket ID (e.g., "TICKET-20241111-001")
+    `customer_id` INT(11) NOT NULL,
+    `product_id` INT(11) NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`customer_id`) REFERENCES `customers`(`id`),
+    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+ALTER TABLE `support_tickets` ADD `resolved` ENUM('yes', 'no') NOT NULL DEFAULT 'no';
+
 COMMIT;
+
+
+---latest

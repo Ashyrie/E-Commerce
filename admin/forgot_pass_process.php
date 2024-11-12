@@ -1,6 +1,7 @@
 <?php
 // buffer need para hindi mag error
 ob_start();
+session_name('admin_session');
 session_start();
 include './init.php';  
 include '../functions.php'; 

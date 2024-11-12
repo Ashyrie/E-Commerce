@@ -1,5 +1,6 @@
 <?php
 ob_start();
+session_name('admin_session');
 session_start();
 $pageTitle = 'Orders';
 include './init.php';
@@ -144,11 +145,11 @@ if (isset($_SESSION['username'])) {
                                 <?php 
                                 // Display all products with their quantities and prices
                                 for ($i = 0; $i < count($products); $i++) {
-                                    echo "<div class='product-item'>" . htmlspecialchars($products[$i]) . " <sup class='text-success fw-bold'>(Q: " . htmlspecialchars($quantities[$i]) . ")</sup> - " . htmlspecialchars($order['currency_symbol']) . number_format($prices[$i], 2) . " each = " . htmlspecialchars($order['currency_symbol']) . number_format($subtotals[$i], 2) . "</div>";
+                                    echo "<div class='product-item'>" . htmlspecialchars($products[$i]) . " <sup class='text-success fw-bold'>(Q: " . htmlspecialchars($quantities[$i]) . ")</sup> - " . htmlspecialchars($order['currency_symbol'] ?? '') . number_format($prices[$i], 2) . " each = " . htmlspecialchars($order['currency_symbol'] ?? '') . number_format($subtotals[$i], 2) . "</div>";
                                 }
                                 ?>
                             </td>
-                            <td><?php echo htmlspecialchars($order['currency_symbol']) . number_format($order['total_amount'], 2); ?></td>
+                            <td><?php echo htmlspecialchars($order['currency_symbol'] ?? '') . number_format($order['total_amount'], 2); ?></td>
                             <td><?php echo htmlspecialchars($order['order_date']); ?></td>
                             <td><?php echo htmlspecialchars($order['order_status']); ?></td>
                             <td><?php echo htmlspecialchars($order['verified_status']); ?></td> <!-- Display Verified Status -->
@@ -201,9 +202,11 @@ if (isset($_SESSION['username'])) {
                 `orders`.*, 
                 `customers`.`name_customer`,
                 `customers`.`email_customer`,
-                `customers`.`phone_customer`
+                `customers`.`phone_customer`,
+                c.symbol AS currency_symbol
                 FROM `orders` 
                 INNER JOIN `customers` ON `orders`.`customer_id` = `customers`.`id`
+                LEFT JOIN `currencies` c ON `orders`.`currency` = c.currency
                 WHERE `orders`.`orders_number` = ?");
             $stmt->execute([$orders_number]);
             $edit = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -248,9 +251,11 @@ if (isset($_SESSION['username'])) {
                 `orders`.*, 
                 `customers`.`name_customer`,
                 `customers`.`email_customer`,
-                `customers`.`phone_customer`
+                `customers`.`phone_customer`,
+                c.symbol AS currency_symbol
                 FROM `orders` 
                 INNER JOIN `customers` ON `orders`.`customer_id` = `customers`.`id`
+                LEFT JOIN `currencies` c ON `orders`.`currency` = c.currency
                 WHERE `orders`.`orders_number` = ?");
             $stmt->execute([$orders_number]);
             $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -305,13 +310,13 @@ if (isset($_SESSION['username'])) {
                                             <tr>
                                                 <td><?php echo htmlspecialchars($item['product_name']); ?></td>
                                                 <td><?php echo htmlspecialchars($item['product_quantity']); ?></td>
-                                                <td><?php echo htmlspecialchars($view['currency_symbol']) . number_format($item['product_price'], 2); ?></td>
-                                                <td><?php echo htmlspecialchars($view['currency_symbol']) . number_format($item['subtotal'], 2); ?></td>
+                                                <td><?php echo htmlspecialchars($view['currency_symbol'] ?? '') . number_format($item['product_price'], 2); ?></td>
+                                                <td><?php echo htmlspecialchars($view['currency_symbol'] ?? '') . number_format($item['subtotal'], 2); ?></td>
                                             </tr>
                                         <?php endforeach; ?>
                                         <tr class="table-active">
                                             <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                                            <td><strong><?php echo htmlspecialchars($view['currency_symbol']) . number_format($total, 2); ?></strong></td>
+                                            <td><strong><?php echo htmlspecialchars($view['currency_symbol'] ?? '') . number_format($total, 2); ?></strong></td>
                                         </tr>
                                     </tbody>
                                 </table>

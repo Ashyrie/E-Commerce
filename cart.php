@@ -1,5 +1,6 @@
 <?php
 ob_start(); // Start output buffering
+session_name('client_session');
 session_start();
 $pageTitle = 'Cart';
 include './init.php';
@@ -12,6 +13,9 @@ use PHPMailer\PHPMailer\Exception;
 
 $do = isset($_GET['do']) ? $_GET['do'] : 'cart';
 $cartItems = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
+
+
+
 
 // Initialize customer variables
 $fullName = '';
@@ -130,7 +134,7 @@ if ($do == 'cart') {
                             <input type="email" name="email_customer" id="email_customer" class="form-control" value="<?php echo $email; ?>" readonly>
                         </div>
                         <div class="form-group">
-                            <label for="note_customer">Additional Information</label>
+                            <label for="note_customer">Notes for this reservation</label>
                             <textarea name="note_customer" id="note_customer" class="form-control" rows="3"></textarea>
                         </div>
                     </div>
@@ -273,19 +277,66 @@ if ($do == 'cart') {
                 if ($recentOrder) {
                     ?>
                     <div class="alert alert-success text-center mt-4 mb-4" role="alert">
-                        <h4 class="alert-heading mb-3">Thank you for trusting Deltech Parking System and Solutions Inc.</h4>
-                        <p class="mb-2">Order(s) have been placed successfully.</p>
-                        <hr>
-                        <p class="mb-0">Your Order/Tracking Number is: 
-                            <strong id="order-number"><?php echo htmlspecialchars($recentOrder['orders_number']); ?></strong>
-                            <button onclick="copyOrderNumber()" class="btn btn-secondary btn-sm ml-2">Copy</button>
-                            <form action="download_receipt.php" method="POST" class="d-inline" target="_blank">
-                            <input type="hidden" name="order_number" value="<?php echo htmlspecialchars($recentOrder['orders_number']); ?>">
-                            <button type="submit" class="btn btn-info btn-sm ml-2">Print/Download</button>
-                            </form>
-                        </p>
-                        <p class="small text-muted mt-2">Please save this number for future reference</p>
-                    </div>
+                    <h4 class="alert-heading mb-3">Thank you for trusting Deltech Parking System and Solutions Inc.</h4>
+                      <p class="mb-2">Your order has been successfully placed!</p>
+                      <hr>
+    
+                     <p class="mb-0">Your Order/Tracking Number is: 
+                    <strong id="order-number"><?php echo htmlspecialchars($recentOrder['orders_number']); ?></strong>
+        
+                    <button onclick="copyOrderNumber()" class="btn btn btn-success btn-sm ml-2">Copy</button>
+        
+                 <form action="download_receipt.php" method="POST" class="d-inline" target="_blank">
+                  <input type="hidden" name="order_number" value="<?php echo htmlspecialchars($recentOrder['orders_number']); ?>">
+                   <button type="submit" class="btn btn btn-success btn-sm ml-2">Print/Download</button>
+                    </form>
+                     </p>
+
+                     <p class="small text-muted mt-2">Please save this number for future reference.</p>
+
+            <div class="cta-buttons mt-4">
+            <a href="chat_list.php" class="btn  bt-btn-custom btn-sm ml-2">Do you have more in mind? Check your Inquiries!</a>
+            <a href="tracking.php" class="btn  bt-btn-custom btn-sm ml-2">Track Your Order</a>
+           </div>
+         </div>
+    <style>
+   
+    .btn-custom {
+        background-color: #4a69bd; 
+        border-color: #4a69bd;
+        color: white; 
+        border-radius: 5px;
+        font-weight: 600;
+        text-align: center;
+        padding: 8px 20px;
+        margin: 5px;
+        text-decoration: none;
+        font-size: 0.875rem;
+        display: inline-block;
+        cursor: pointer;
+        transition: background-color 0.3s ease; 
+    }
+
+    .btn-custom:hover {
+        background-color: #60a3bc; 
+        border-color: #60a3bc;
+        color: white; 
+    }
+
+    
+    .btn-sm {
+        font-size: 0.85rem; 
+    }
+
+    .ml-2 {
+        margin-left: 10px;
+    }
+
+    .cta-buttons {
+        margin-top: 20px;
+        text-align: center;
+    }
+    </style>
                     <?php
                 }
                 

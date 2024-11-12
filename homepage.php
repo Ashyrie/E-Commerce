@@ -1,5 +1,6 @@
 
 <?php
+session_name('client_session');
 session_start();
 $pageTitle = 'Homepage';
 include './init.php';

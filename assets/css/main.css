@@ -18,7 +18,7 @@ body::before {
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('path/to/noise.png'); /* Replace with your noise texture */
+    
     opacity: 0.05; /* Adjust opacity to suit */
     pointer-events: none; /* Allow clicks through the noise */
 }
@@ -73,12 +73,10 @@ h2.card-title {
 }
 
 .container {
-  background: rgba(255, 255, 255, 0.22);
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+
+  /* Remove border and outline */
+  border: none;
+  outline: none;
 }
 
 /* Optional: Styling for text inside the card */
@@ -153,12 +151,10 @@ h2.card-title {
 
 
 footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: rgba(255, 255, 255, 0.9); /* Optional: add a background for better visibility */
-  padding: 10px 20px; /* Adjust padding as needed */
-  text-align: center; /* Center the footer text */
-  z-index: 1; /* Set a lower z-index to place it behind other elements */
+  margin-top: auto; /* Push the footer to the bottom */
+  padding: 20px 0; /* Adjust padding as needed */
+  background-color: #f8f9fa; /* You can use bg-body-tertiary here if you want */
+  text-align: center;
+  width: 100%;
 }
+
