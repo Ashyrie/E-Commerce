@@ -116,4 +116,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['product_id']) && isset(
     }
     exit; 
 }
-

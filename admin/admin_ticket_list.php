@@ -1,78 +1,50 @@
 <?php
-include './adminchat_init.php'; 
+session_name('admin_session');
+session_start();
+include './connect.php';  
+include './inc/functions/function.php';  
 
 
-if (!isset($_SESSION['username'])) {
-   
-    header('Location: index.php');
-    exit();
-}
-
-
-$customer_filter = isset($_GET['customer_name']) ? $_GET['customer_name'] : '';
-$product_filter = isset($_GET['product_name']) ? $_GET['product_name'] : '';
-$ticket_filter = isset($_GET['ticket_id']) ? $_GET['ticket_id'] : '';
-$resolved_filter = isset($_GET['resolved']) ? $_GET['resolved'] : '';
-
-
-$tickets = [];
-$ticket_query_str = "
-    SELECT t.ticket_id, t.created_at AS ticket_created_at, 
-           c.name_customer, c.username, 
-           p.name_product, p.id AS product_id, t.resolved
-    FROM support_tickets t
-    JOIN customers c ON t.customer_id = c.id
-    JOIN products p ON t.product_id = p.id
-";
-
-
-$conditions = [];
-if ($customer_filter) {
-    $conditions[] = "c.name_customer LIKE :customer_filter";
-}
-if ($product_filter) {
-    $conditions[] = "p.name_product LIKE :product_filter";
-}
-if ($ticket_filter) {
-    $conditions[] = "t.ticket_id LIKE :ticket_filter";
-}
-if ($resolved_filter !== '') {
+if (!isset($_SESSION['id'])) {
     
-    $conditions[] = "t.resolved = :resolved_filter";
+    header('Location: index.php');
+    exit;
 }
 
 
-if (!empty($conditions)) {
-    $ticket_query_str .= " WHERE " . implode(' AND ', $conditions);
+$admin_id = $_SESSION['id']; 
+
+
+$ticket_id = isset($_GET['ticket_id']) ? $_GET['ticket_id'] : ''; 
+
+// Fetch ticket details for display (ticket_id, product_id, customer_name)
+$ticket_details = null;
+$ticket_query = $con->prepare("SELECT st.ticket_id, st.customer_id, c.name_customer AS customer_name, p.id AS product_id, p.name_product 
+                              FROM support_tickets st
+                              JOIN customers c ON st.customer_id = c.id
+                              JOIN products p ON st.product_id = p.id
+                              WHERE st.ticket_id = ?");
+$ticket_query->execute([$ticket_id]);
+$ticket_details = $ticket_query->fetch(PDO::FETCH_ASSOC);
+
+
+if (!$ticket_details) {
+    echo "Ticket not found.";
+    exit;
 }
 
-$ticket_query_str .= " ORDER BY t.created_at DESC";
+// Fetch messages related to this ticket
+$chat_messages = [];
+$messages = $con->prepare("
+    SELECT m.*, c.name_customer AS customer_name, a.username AS admin_username 
+    FROM messages m
+    LEFT JOIN customers c ON m.sender_id = c.id AND m.sender_type = 'customer'
+    LEFT JOIN admin a ON m.sender_id = a.id AND m.sender_type = 'admin' 
+    WHERE m.ticket_id = ? ORDER BY m.timestamp ASC
+");
+$messages->execute([$ticket_id]);
+$chat_messages = $messages->fetchAll(PDO::FETCH_ASSOC);
 
-$ticket_query = $con->prepare($ticket_query_str);
-
-
-if ($customer_filter) {
-    $ticket_query->bindValue(':customer_filter', "%$customer_filter%");
-}
-if ($product_filter) {
-    $ticket_query->bindValue(':product_filter', "%$product_filter%");
-}
-if ($ticket_filter) {
-    $ticket_query->bindValue(':ticket_filter', "%$ticket_filter%");
-}
-if ($resolved_filter !== '') {
-    $ticket_query->bindValue(':resolved_filter', $resolved_filter);
-}
-
-$ticket_query->execute();
-$tickets = $ticket_query->fetchAll(PDO::FETCH_ASSOC);
-
-
-$customers_query = $con->query("SELECT name_customer FROM customers ORDER BY name_customer ASC");
-$customers = $customers_query->fetchAll(PDO::FETCH_ASSOC);
-
-$products_query = $con->query("SELECT name_product FROM products ORDER BY name_product ASC");
-$products = $products_query->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -80,230 +52,183 @@ $products = $products_query->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Ticket List</title>
+    <title>Admin - Ticket Details - <?php echo htmlspecialchars($ticket_details['name_product']); ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-       
-        body {
-            background-color: #f5f6f7;
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #f7f7f7;
         }
-        .back-button {
-            margin: 20px 0;
-            text-decoration: none;
-            background-color: #28a745;
-            color: white;
 
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-size: 16px;
-            display: inline-block;
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            overflow: hidden;
         }
-        .back-button:hover {
-            background-color: #218838;
-            color: white;
-        }
-        .ticket-list-container {
-            margin-top: 30px;
-            padding: 0 15px;
-        }
-        .ticket-item {
-            position: relative;
+
+        .chat-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: #ffffff;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: transform 0.3s ease, background-color 0.3s ease;
-            text-decoration: none;
+            background-color: #280068; 
+            color: white; 
+            padding: 6px;
+            border-radius: 10px 10px 0 0;
         }
-        .ticket-item:hover {
-            background-color: #f1f1f1;
-            transform: scale(1.02);
-        }
-        .ticket-info {
-            font-size: 18px; 
-            font-weight: 600;
-            color: #333;
-            text-align: center;
-        }
-        .ticket-timestamp {
-            font-size: 14px; 
-            color: #888;
-            margin-top: 8px;
-        }
-        .ticket-list-container .list-group {
-            padding: 0;
-        }
-        .no-tickets-message {
-            padding: 30px;
-            text-align: center;
+
+        .chat-header h3 {
+            margin: 0;
             font-size: 18px;
-            color: #999;
-            font-style: italic;
-        }
-        .admin-info {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-            margin-left: 10px;
         }
 
-        
-        .ticket-item .ticket-actions {
-            display: none;
-        }
-
-        
-        .ticket-item:hover .ticket-actions {
-            display: block;
-        }
-
-        
-        .ticket-actions button {
-            margin-left: 10px;
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 10px;
             font-size: 14px;
+            background-color: #fafafa;
+            max-height: calc(100vh - 170px);
+            padding-right: 10px;
         }
 
-        .resolved-btn {
-            background-color: #28a745;
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            border-radius: 25px;
+            max-width: 75%;
+        }
+
+        .message.sent {
+            justify-content: flex-end;
+            background-color: #d1f1d1;
+            align-self: flex-end;
+            border-bottom-right-radius: 0;
+        }
+
+        .message.received {
+            justify-content: flex-start;
+            background-color: #dcc6ff;
+            align-self: flex-start;
+            border-bottom-left-radius: 0;
+        }
+
+        .sender {
+            font-weight: bold;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .text {
+            margin-top: 5px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .back-to-ticket-list-btn {
+            background-color: #310080;
             color: white;
-            border: none;
-            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 10px;
+            display: inline-block;
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 10px;
         }
 
-        .resolved-btn:hover {
-            background-color: #218838;
-        }
-
-        .delete-btn {
-            background-color: #dc3545;
+        .back-to-ticket-list-btn:hover {
+            background-color: #380091;
             color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        .delete-btn:hover {
-            background-color: #c82333;
-        }
-
-        .undo-resolved-btn {
-            background-color: #ffc107; 
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        .undo-resolved-btn:hover {
-            background-color: #e0a800;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="dashboard.php" class="back-button">Back to Dashboard</a>
+        <a href="admin_ticket_list.php" class="back-to-ticket-list-btn">
+            <i class="fa fa-backward" aria-hidden="true"></i> Back to Ticket List
+        </a>
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Customer Support Tickets</h2>
-            
-            <?php if (isset($_SESSION['username'])): ?>
-                <span class="admin-info">Logged in as: <?php echo htmlspecialchars($_SESSION['username']); ?></span>
-            <?php endif; ?>
-        </div>
-
-       
-        <form method="get" class="mb-4">
-            <div class="row">
-                <div class="col">
-                    <select name="customer_name" class="form-control">
-                        <option value="">Filter by Customer</option>
-                        <?php foreach ($customers as $customer): ?>
-                            <option value="<?php echo htmlspecialchars($customer['name_customer']); ?>" <?php echo $customer_filter == $customer['name_customer'] ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($customer['name_customer']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="col">
-                    <select name="product_name" class="form-control">
-                        <option value="">Filter by Product</option>
-                        <?php foreach ($products as $product): ?>
-                            <option value="<?php echo htmlspecialchars($product['name_product']); ?>" <?php echo $product_filter == $product['name_product'] ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($product['name_product']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="col">
-                    <input type="text" name="ticket_id" class="form-control" placeholder="Search by Ticket ID" value="<?php echo htmlspecialchars($ticket_filter); ?>" />
-                </div>
-                <div class="col">
-                    <select name="resolved" class="form-control">
-                        <option value="">Filter by Status</option>
-                        <option value="yes" <?php echo $resolved_filter === 'yes' ? 'selected' : ''; ?>>Resolved</option>
-                        <option value="no" <?php echo $resolved_filter === 'no' ? 'selected' : ''; ?>>Unresolved</option>
-                    </select>
-                </div>
-                <div class="col">
-                    <button type="submit" class="btn btn-primary">Apply Filter</button>
-                </div>
+        <div class="chat-container">
+            <div class="chat-header">
+                <h3>Admin - Ticket Details - <?php echo htmlspecialchars($ticket_details['name_product']); ?></h3>
+                <p><strong>Ticket ID:</strong> <?php echo htmlspecialchars($ticket_details['ticket_id']); ?></p>
+                <p><strong>Customer:</strong> <?php echo htmlspecialchars($ticket_details['customer_name']); ?></p>
             </div>
-        </form>
-
-        <div class="ticket-list-container">
-            <?php if (!empty($tickets)): ?>
-                <div class="list-group">
-                    <?php foreach ($tickets as $ticket): ?>
-                        <a href="admin_ticket_details.php?ticket_id=<?php echo htmlspecialchars($ticket['ticket_id']); ?>" class="ticket-item">
-                            <div class="ticket-info">
-                                <strong>Ticket ID: <?php echo htmlspecialchars($ticket['ticket_id']); ?></strong>
-                            </div>
-
-                            <div class="ticket-info">
-                                <strong>Customer: <?php echo htmlspecialchars($ticket['name_customer']); ?></strong><br>
-                                <small>Username: <?php echo htmlspecialchars($ticket['username']); ?></small>
-                            </div>
-
-                            <div class="ticket-info">
-                                <strong>Product: <?php echo htmlspecialchars($ticket['name_product']); ?></strong>
-                            </div>
-
-                            <div class="ticket-timestamp">
-                                Created at: <?php echo date('Y-m-d H:i', strtotime($ticket['ticket_created_at'])); ?>
-                            </div>
-
-                            
-                            <div class="ticket-actions">
-                               
-                                <?php if ($ticket['resolved'] === 'no'): ?>
-                                    <form method="POST" action="resolve_ticket.php">
-                                        <input type="hidden" name="ticket_id" value="<?php echo $ticket['ticket_id']; ?>" />
-                                        <button type="submit" class="resolved-btn">Mark as Resolved</button>
-                                    </form>
-                                <?php elseif ($ticket['resolved'] === 'yes'): ?>
-                                    <form method="POST" action="undo_resolve_ticket.php">
-                                        <input type="hidden" name="ticket_id" value="<?php echo $ticket['ticket_id']; ?>" />
-                                        <button type="submit" class="undo-resolved-btn">Undo Resolved</button>
-                                    </form>
-                                <?php endif; ?>
-
-                                <form method="POST" action="delete_ticket.php">
-                                    <input type="hidden" name="ticket_id" value="<?php echo $ticket['ticket_id']; ?>" />
-                                    <button type="submit" class="delete-btn">Delete</button>
-                                </form>
-                            </div>
-                        </a>
-                    <?php endforeach; ?>
-                </div>
-            <?php else: ?>
-                <div class="no-tickets-message">No tickets found. Try adjusting the filters.</div>
-            <?php endif; ?>
+            
+            <div class="chat-messages" id="chatMessages">
+                <?php
+                if (!empty($chat_messages)) {
+                    foreach ($chat_messages as $msg) : ?>
+                        <div class="message <?php echo ($msg['sender_type'] === 'admin') ? 'sent' : 'received'; ?>">
+                            <div class="sender"><?php echo htmlspecialchars($msg['customer_name'] ?: $msg['admin_username']); ?> <small>(<?php echo $msg['timestamp']; ?>)</small></div>
+                            <div class="text"><?php echo nl2br(htmlspecialchars($msg['message'])); ?></div>
+                        </div>
+                    <?php endforeach;
+                } else {
+                    echo "<p>No messages yet.</p>";
+                }
+                ?>
+            </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script>
+        
+        function scrollToBottom() {
+            var chatMessagesDiv = $('#chatMessages');
+            chatMessagesDiv.scrollTop(chatMessagesDiv[0].scrollHeight);
+        }
+
+       
+        setInterval(function() {
+            loadMessages();
+        }, 2000);
+
+       
+        function loadMessages() {
+            $.ajax({
+                url: 'admin_chat_process.php',
+                method: 'GET',
+                data: { 
+                    ticket_id: '<?php echo $ticket_id; ?>'
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        var chatMessagesHtml = '';
+                        response.messages.forEach(function(msg) {
+                            var messageClass = msg.sender_type === 'admin' ? 'sent' : 'received';
+                            chatMessagesHtml += `
+                                <div class="message ${messageClass}">
+                                    <div class="sender">${msg.sender_name} <small>(${msg.timestamp})</small></div>
+                                    <div class="text">${msg.message.replace(/\n/g, '<br>')}</div>
+                                </div>
+                            `;
+                        });
+
+                        
+                        $('#chatMessages').html(chatMessagesHtml);
+                        scrollToBottom();  
+                    } else {
+                        alert(response.message);  
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log("AJAX Error: " + status + ": " + error);  
+                }
+            });
+        }
+
+        // Load messages initially when page loads
+        loadMessages();
+    </script>
 </body>
 </html>
