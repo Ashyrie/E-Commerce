@@ -191,6 +191,35 @@ CREATE TABLE `support_tickets` (
 
 ALTER TABLE `support_tickets` ADD `resolved` ENUM('yes', 'no') NOT NULL DEFAULT 'no';
 
+
+---latest update (for normalization of some parts nung customer table)
+
+CREATE TABLE `customer_companies` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `customer_id` INT(11) NOT NULL,  -- Foreign key to the `customers` table
+  `company_name` VARCHAR(255) NOT NULL,
+  `company_address` TEXT NOT NULL,
+  `job_title` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`customer_id`) REFERENCES `customers`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+ALTER TABLE `customers`
+  DROP COLUMN `company_name`,
+  DROP COLUMN `company_address`,
+  DROP COLUMN `job_title`;
+
+  ALTER TABLE `customer_companies`
+    ADD COLUMN `business_document` VARCHAR(255) NULL AFTER `job_title`;
+
+
+    ALTER TABLE `customers`
+    DROP COLUMN `business_document`;
+  
+
+
+
 COMMIT;
 
 

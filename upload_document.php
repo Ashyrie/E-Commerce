@@ -14,7 +14,6 @@ if (!isset($_SESSION['email_customer'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $file_type = filterInput($_POST['file_type']);
     $email_customer = $_SESSION['email_customer']; // Get the user's email from session
 
     // Validate file upload
@@ -52,13 +51,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Move file to upload directory
         if (move_uploaded_file($file_tmp, $upload_dir . $unique_file_name)) {
-            // Save file path to the database
-            $stmt = $con->prepare("UPDATE customers SET business_document = ? WHERE email_customer = ?");
-            $stmt->execute([$upload_dir . $unique_file_name, $email_customer]);
+            // First, check if the customer has a company record in the customer_companies table
+            $stmt = $con->prepare("SELECT * FROM customer_companies WHERE customer_id = (SELECT id FROM customers WHERE email_customer = ?)");
+            $stmt->execute([$email_customer]);
+            $company = $stmt->fetch();
 
-            $_SESSION['success'] = 'Your business document has been successfully uploaded.';
-            header('Location: login.php'); // Redirect to login after successful upload
-            exit();
+            if ($company) {
+                // If company exists, update the business document in the customer_companies table
+                $stmt = $con->prepare("UPDATE customer_companies SET business_document = ? WHERE customer_id = (SELECT id FROM customers WHERE email_customer = ?)");
+                $stmt->execute([$upload_dir . $unique_file_name, $email_customer]);
+                
+                $_SESSION['success'] = 'Your business document has been successfully uploaded.';
+                header('Location: login.php'); // Redirect to a dashboard or profile page after successful upload
+                exit();
+            } else {
+                $_SESSION['errors'][] = 'No company record found for this customer. Please contact support.';
+                header('Location: upload_document.php');
+                exit();
+            }
         } else {
             $_SESSION['errors'][] = 'Failed to upload the document. Please try again.';
             header('Location: upload_document.php');
@@ -154,13 +164,6 @@ ob_end_flush(); // End output buffering
     <?php endif; ?>
 
     <form action="upload_document.php" method="POST" enctype="multipart/form-data">
-        <label for="file_type">Select Document Type</label>
-        <select name="file_type" required>
-            <option value="business_permit">Business Permit</option>
-            <option value="tax_id">Tax Identification</option>
-            <option value="other">Other</option>
-        </select>
-
         <label for="document">Upload Document</label>
         <input type="file" name="document" id="document" accept=".jpg, .jpeg, .png, .pdf, .docx" required>
 

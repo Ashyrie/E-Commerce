@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $customer = $stmt->fetch();
 
     if ($customer) {
-        // Update customer as verified
+        // Clear the verification code once it's verified
         $stmt = $con->prepare("UPDATE customers SET verification_code = NULL WHERE id = ?");
         $stmt->execute([$customer['id']]);
 
@@ -178,7 +178,7 @@ ob_end_flush(); // End output buffering
 
     if (popup) {
         setTimeout(function() {
-            // After 3 seconds, automatically redirect to login page
+            // After 3 seconds, automatically redirect to the upload document page
             window.location.href = 'upload_document.php';
         }, 3000);
     }

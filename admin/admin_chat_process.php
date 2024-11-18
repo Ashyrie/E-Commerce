@@ -56,6 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['message']) && isset($
 }
 
 // GET request to fetch chat messages
+// GET request to fetch chat messages
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['product_id']) && isset($_GET['ticket_id'])) {
     $product_id = (int)$_GET['product_id'];
     $ticket_id = $_GET['ticket_id'];
@@ -65,11 +66,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['product_id']) && isset(
         $stmt = $con->prepare("
             SELECT m.id, m.message, m.timestamp, m.ticket_id,
                    IF(m.sender_type = 'customer', 
-                       CONCAT(c.name_customer, ' ', IFNULL(c.company_name, '')) , 
+                       CONCAT(c.name_customer, ' ', IFNULL(cc.company_name, '')) , 
                        CONCAT(a.username, ' Administrator')) AS sender_name,
                    m.sender_type
             FROM messages m
             LEFT JOIN customers c ON m.sender_id = c.id AND m.sender_type = 'customer'
+            LEFT JOIN customer_companies cc ON c.id = cc.customer_id AND m.sender_type = 'customer'
             LEFT JOIN admin a ON m.sender_id = a.id AND m.sender_type = 'admin' 
             WHERE m.product_id = ? AND m.ticket_id = ?
             ORDER BY m.timestamp ASC
@@ -114,3 +116,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['product_id']) && isset(
     }
     exit; 
 }
+

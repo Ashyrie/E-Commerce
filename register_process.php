@@ -1,6 +1,6 @@
 <?php
-session_start();
 session_name('client_session');
+session_start();
 ob_start(); // Start output buffering
 include './init.php';
 include 'functions.php';
@@ -44,10 +44,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Generate random 6 digit code
         $verification_code = generateVerificationCode();
 
-        // Insert customer details into the database (without verifying the email yet)
+        // Insert customer details into the `customers` table
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-        $stmt = $con->prepare("INSERT INTO customers (username, name_customer, company_name, company_address, job_title, email_customer, phone_customer, address, password, verification_code, date_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-        $stmt->execute([$username, $name_customer, $company_name, $company_address, $job_title, $email_customer, $phone_customer, $address, $hashedPassword, $verification_code]);
+        $stmt = $con->prepare("INSERT INTO customers (username, name_customer, email_customer, phone_customer, address, password, verification_code, date_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
+        $stmt->execute([$username, $name_customer, $email_customer, $phone_customer, $address, $hashedPassword, $verification_code]);
+
+        // Get the last inserted customer ID
+        $customer_id = $con->lastInsertId();
+
+        // Insert company details into the `customer_companies` table
+        if (!empty($company_name) && !empty($company_address) && !empty($job_title)) {
+            $stmt_company = $con->prepare("INSERT INTO customer_companies (customer_id, company_name, company_address, job_title, business_document) VALUES (?, ?, ?, ?, ?)");
+            $stmt_company->execute([$customer_id, $company_name, $company_address, $job_title, '']); // Assuming the business document is optional
+        }
 
         // Store email in session for later use
         $_SESSION['email_customer'] = $email_customer;

@@ -3,7 +3,6 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-
 session_name('client_session');
 session_start();
 
@@ -24,16 +23,13 @@ if (!isset($_SESSION['customer_id'])) {
 
 $customer_id = $_SESSION['customer_id']; 
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['message']) && isset($_POST['product_id']) && isset($_POST['ticket_id'])) {
     $message = trim($_POST['message']);
     $product_id = (int)$_POST['product_id'];
     $ticket_id = $_POST['ticket_id'];
 
-    
     if (!empty($message)) {
         try {
-            
             $stmt = $con->prepare("INSERT INTO messages (customer_id, product_id, message, sender_type, sender_id, ticket_id) VALUES (?, ?, ?, 'customer', ?, ?)");
             $stmt->execute([$customer_id, $product_id, $message, $customer_id, $ticket_id]);
 
@@ -68,16 +64,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['product_id']) && isset(
 
     try {
         // Fetch messages for the given product_id and ticket_id
-        $stmt = $con->prepare("SELECT m.id, m.message, m.timestamp, 
-                                       IF(m.sender_type = 'customer', 
-                                           CONCAT(c.name_customer, ' ', IFNULL(c.company_name, '')), 
-                                           CONCAT(a.username, ' Administrator')) AS sender_name,
-                                       m.sender_type, m.ticket_id
-                                FROM messages m
-                                LEFT JOIN customers c ON m.customer_id = c.id
-                                LEFT JOIN admin a ON m.admin_id = a.id
-                                WHERE m.product_id = ? AND m.ticket_id = ?
-                                ORDER BY m.timestamp ASC");
+        $stmt = $con->prepare("
+            SELECT m.id, m.message, m.timestamp, 
+                   IF(m.sender_type = 'customer', 
+                       CONCAT(c.name_customer, ' ', IFNULL(cc.company_name, '')), 
+                       CONCAT(a.username, ' Administrator')) AS sender_name,
+                   m.sender_type, m.ticket_id
+            FROM messages m
+            LEFT JOIN customers c ON m.customer_id = c.id
+            LEFT JOIN customer_companies cc ON c.id = cc.customer_id  -- Join customer_companies for company_name
+            LEFT JOIN admin a ON m.admin_id = a.id
+            WHERE m.product_id = ? AND m.ticket_id = ?
+            ORDER BY m.timestamp ASC
+        ");
         $stmt->execute([$product_id, $ticket_id]);
         $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

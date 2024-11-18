@@ -156,6 +156,7 @@ $latestProducts = $stmt->fetchAll();
 
         .what-we-do {
             background-color: var(--red-color);
+            color: #333;
         }
 
         .our-services {
@@ -517,26 +518,26 @@ $latestProducts = $stmt->fetchAll();
         </div>
     </section>
 
-    <section class="info-sections">
+   <section class="info-sections">
     <div class="info-card what-we-do">
-        <h2>WHAT WE DO</h2>
+        <h2><a style="color:black">WHAT WE DO</a></h2>
         <ul>
-            <li><a href="parking_system_automation.php">Parking System Automation</a></li>
-            <li><a href="autopay_station.php">Autopay Station</a></li>
-            <li><a href="mobile_parking_system.php">Mobile Parking System</a></li>
-            <li><a href="hotel_lock_sets.php">Hotel Locks Sets</a></li>
-            <li><a href="cctv.php">CCTV</a></li>
-            <li><a href="access_control_system.php">Access Control System</a></li>
-            <li><a href="traffic_signaling_system.php">Traffic Signaling System</a></li>
-            <li><a href="pylon_display.php">Pylon Display</a></li>
+            <li><a href="parking_system_automation.php" style="text-decoration: underline;color: blue;">Parking System Automation</a></li>
+            <li><a href="autopay_station.php" style="text-decoration: underline;color: blue;">Autopay Station</a></li>
+            <li><a href="mobile_parking_system.php" style="text-decoration: underline;color: blue;">Mobile Parking System</a></li>
+            <li><a href="hotel_lock_sets.php" style="text-decoration: underline;color: blue;">Hotel Locks Sets</a></li>
+            <li><a href="cctv.php" style="text-decoration: underline;color: blue;">CCTV</a></li>
+            <li><a href="access_control_system.php" style="text-decoration: underline;color: blue;">Access Control System</a></li>
+            <li><a href="traffic_signaling_system.php" style="text-decoration: underline;color: blue;">Traffic Signaling System</a></li>
+            <li><a href="pylon_display.php" style="text-decoration: underline;color: blue;">Pylon Display</a></li>
         </ul>
     </div>
     <div class="info-card our-services">
-        <h2>OUR SERVICES</h2>
+        <h2><a style="color:black">OUR SERVICES</a></h2>
         <ul>
-            <li><a href="parking_station_design.php">Review and recommend parking station designs</a></li>
-            <li><a href="preventive_maintenance.php">Preventive Maintenance for Parking Equipment</a></li>
-            <li><a href="equipment_integration.php">Integration of Parking Equipment</a></li>
+            <li><a href="parking_station_design.php" style="text-decoration: underline;color: blue;">Review and recommend parking station designs</a></li>
+            <li><a href="preventive_maintenance.php" style="text-decoration: underline;color: blue;">Preventive Maintenance for Parking Equipment</a></li>
+            <li><a href="equipment_integration.php" style="text-decoration: underline;color: blue;">Integration of Parking Equipment</a></li>
         </ul>
     </div>
 </section>

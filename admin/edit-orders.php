@@ -93,7 +93,7 @@ if (isset($_SESSION['username'])) {
 ?>
     <div class="orders">
         <div class="container">
-            <h1>Orders&nbsp;<a class="btn btn-outline-primary" href="./edit-orders.php?do=add-new">Add New</a></h1>
+            <h1>Orders</h1>
             <form method="POST" class="mb-4">
                 <div class="input-group">
                     <input type="text" name="search_order_number" class="form-control" placeholder="Search Order Number" aria-label="Search Order Number">
@@ -320,12 +320,12 @@ if (isset($_SESSION['username'])) {
                                         </tr>
                                     </tbody>
                                 </table>
-                                <form method="POST" action="edit-orders.php?do=receipt-orders">
-                                    <input type="hidden" name="orders_number" value="<?php echo htmlspecialchars($view['orders_number']) ?>">
-                                    <button type="submit" class="btn btn-light" name="order_receipt">
-                                        <i class="fa-solid fa-file-invoice"></i>&nbsp;Receipt
-                                    </button>
-                                </form>
+                                <form method="POST" action="download_order.php" target="_blank">
+    <input type="hidden" name="order_number" value="<?php echo htmlspecialchars($view['orders_number']); ?>">
+    <button type="submit" class="btn btn-light" name="order_receipt">
+        <i class="fa-solid fa-file-invoice"></i>&nbsp;Receipt
+    </button>
+</form>
                             </div>
                         </div>
                     </div>
