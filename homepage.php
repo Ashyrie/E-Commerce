@@ -1,6 +1,4 @@
-
 <?php
-session_name('client_session');
 session_start();
 $pageTitle = 'Homepage';
 include './init.php';
@@ -19,6 +17,7 @@ $latestProducts = $stmt->fetchAll();
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
+        
         /* General Styling */
         :root {
             --primary-color: #280068;
@@ -34,82 +33,82 @@ $latestProducts = $stmt->fetchAll();
         }
 
         /* Enhanced Hero Slider */
-        .hero-slider {
-            position: relative;
-            height: 80vh;
-            overflow: hidden;
-        }
+       /* Slider Container */
+.hero-slider {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100vh;
+}
 
-        .slider-container {
-            display: flex;
-            height: 100%;
-            transition: transform 0.5s ease-in-out;
-            width: 300%; /* Width = 100% * number of slides */
-        }
+/* Slider Images */
+.hero-slider .slider-container {
+  display: flex;
+  transition: transform 0.5s ease;
+}
 
-        .slide {
-            flex: 0 0 33.333%; /* Width = 100% / number of slides */
-            position: relative;
-        }
+.hero-slider .slide {
+  min-width: 100%;
+  position: relative;
+}
 
-        .slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+.hero-slider img {
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+}
 
-        .slide-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 3rem 4rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-            width: 80%;
-            max-width: 600px;
-        }
+/* Slide Content */
+.hero-slider .slide-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+  padding: 20px 40px;
+  border-radius: 10px;
+}
 
-        .slide-content h1 {
-            color: #280068;
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-        }
+.hero-slider .slide-content h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #4A0D67;
+  margin: 0;
+}
 
-        .slide-content p {
-            color: #280068;
-            font-size: 1.5rem;
-            margin-bottom: 2rem;
-        }
+.hero-slider .slide-content p {
+  font-size: 1rem;
+  color: #333;
+}
 
-        /* Slider Navigation Arrows */
-        .slider-nav-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.7);
-            border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: #280068;
-            z-index: 10;
-            transition: background-color 0.3s ease;
-        }
+.hero-slider .slide-content .reserve-now-btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #4A0D67; /* Button background color */
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 30px;
+}
 
-        .slider-nav-btn:hover {
-            background: rgba(255, 255, 255, 0.9);
-        }
+/* Navigation Buttons */
+.hero-slider .slider-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  color: #fff;
+  font-size: 2rem;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 50%;
+}
 
-        .prev-btn {
+        
+     .prev-btn {
             left: 20px;
         }
 
@@ -156,7 +155,6 @@ $latestProducts = $stmt->fetchAll();
 
         .what-we-do {
             background-color: var(--red-color);
-            color: #333;
         }
 
         .our-services {
@@ -225,62 +223,83 @@ $latestProducts = $stmt->fetchAll();
         }
 
        /* Updated Partners Section */
-       .partners {
+     /* Partners Section */
+ /* Updated Partners Section */
+ .partners {
             background-color: white;
             text-align: center;
             position: relative;
         }
 
-        .partners h2 {
-            color: white;
-            margin: 0;
-            padding: 1.5rem 0;
-            font-size: 2rem;
-            text-transform: uppercase;
-            background-color: #280068;
-            position: relative;
-        }
+.partners h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: white;
+    background-color: #1a0046;
+    height: 100px;
+    margin-top: 10px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        .partners-grid {
-            background-color: white;
-            padding: 3rem 2rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+.partners-grid {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
 
-        .partner-logo {
-            flex: 0 1 150px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-            background-color: white;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
+/* Slider Animation */
+.slider {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    animation: slide 30s linear infinite;
+    width: calc(100% * 2); /* Allow sliding with doubled content */
+}
 
-        .partner-logo:hover {
-            background-color: white;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transform: translateY(-5px);
-        }
+.partner-logo img {
+    max-width: 100px;
+    margin: 0 50px;
+    transition: transform 0.3s ease-in-out;
+}
 
-        .partner-logo img {
-            max-width: 100%;
-            height: auto;
-            object-fit: contain;
-            transition: transform 0.3s ease;
-        }
+.partner-logo img:hover {
+    transform: scale(1.1);
+}
 
-        .partner-logo:hover img {
-            transform: scale(1.1);
-        }
+/* Slide Animation Keyframes */
+@keyframes slide {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%); /* Slide to half width */
+    }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .partners h2 {
+        font-size: 20px;
+    }
+
+    .partner-logo img {
+        max-width: 80px;
+        margin: 0 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    .partner-logo img {
+        max-width: 60px;
+        margin: 0 10px;
+    }
+}
 
         .see-more-btn {
             background-color: #280068;
@@ -518,9 +537,9 @@ $latestProducts = $stmt->fetchAll();
         </div>
     </section>
 
-   <section class="info-sections">
+    <section class="info-sections">
     <div class="info-card what-we-do">
-        <h2><a style="color:black">WHAT WE DO</a></h2>
+        <h2><a style="color:white">WHAT WE DO</a></h2>
         <ul>
             <li><a href="parking_system_automation.php" style="text-decoration: underline;color: blue;">Parking System Automation</a></li>
             <li><a href="autopay_station.php" style="text-decoration: underline;color: blue;">Autopay Station</a></li>
@@ -543,6 +562,7 @@ $latestProducts = $stmt->fetchAll();
 </section>
 
 
+
   <!-- Featured Products -->
 <section class="featured-products">
     <h2 class="section-title">OUR FEATURED PRODUCTS</h2>
@@ -563,7 +583,8 @@ $latestProducts = $stmt->fetchAll();
 
     <!-- Updated Partners Section -->
     <section class="partners">
-        <h2>DELTECH INDUSTRY PARTNERS</h2>
+    <h2>DELTECH INDUSTRY PARTNERS</h2>
+    <div class="slider">
         <div class="partners-grid">
             <div class="partner-logo"><img src="assets/img/sm.png" alt="SM"></div>
             <div class="partner-logo"><img src="assets/img/mpt_mobility.png" alt="MPT Mobility"></div>
@@ -576,9 +597,23 @@ $latestProducts = $stmt->fetchAll();
             <div class="partner-logo"><img src="assets/img/starmall.png" alt="Starmall"></div>
             <div class="partner-logo"><img src="assets/img/apmc.png" alt="APMC"></div>
             <div class="partner-logo"><img src="assets/img/global.png" alt="Global"></div>
-        </div>
-        <a href="about.php" class="see-more-btn">SEE MORE</a>
-    </section>
+            
+            <!-- Duplicate items for seamless scroll -->
+            <div class="partner-logo"><img src="assets/img/sm.png" alt="SM"></div>
+            <div class="partner-logo"><img src="assets/img/mpt_mobility.png" alt="MPT Mobility"></div>
+            <div class="partner-logo"><img src="assets/img/eton.png" alt="Eton Centris"></div>
+            <div class="partner-logo"><img src="assets/img/mactan.png" alt="Mactan Cebu Airport"></div>
+            <div class="partner-logo"><img src="assets/img/u_park.png" alt="U Park"></div>
+            <div class="partner-logo"><img src="assets/img/megaworld.png" alt="Megaworld"></div>
+            <div class="partner-logo"><img src="assets/img/nustar.png" alt="Nustar Resort"></div>
+            <div class="partner-logo"><img src="assets/img/makati_medical.png" alt="Makati Medical Center"></div>
+            <div class="partner-logo"><img src="assets/img/starmall.png" alt="Starmall"></div>
+            <div class="partner-logo"><img src="assets/img/apmc.png" alt="APMC"></div>
+            <div class="partner-logo"><img src="assets/img/global.png" alt="Global"></div>
+        </div>de
+    </div>
+</section>
+
 <br>
 
     <!-- Connect Section -->
